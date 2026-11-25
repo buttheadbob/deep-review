@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/DeepRules/DeepRules.csproj" />
+  <Project Path="tests/DeepRules.Tests/DeepRules.Tests.csproj" />
+</Solution>

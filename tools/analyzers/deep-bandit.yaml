@@ -1,0 +1,4 @@
+# Deep review bandit configuration. Passed with -c, so the repository's own bandit settings are ignored.
+# Every test runs, at every severity and confidence. A test is skipped only by an entry in "skips" with a "# reason:".
+# Inline "# nosec" is ignored (--ignore-nosec) and counted as a suppression issue.
+skips: []

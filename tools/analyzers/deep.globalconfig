@@ -1,0 +1,384 @@
+# Deep review analyzer configuration (Space Engineers plugins and the user's other .NET projects).
+#
+# This file is the ONLY place a rule may be turned off. It is part of toolsVersion, so the rule set is fixed and the same
+# for every project. Every line that turns a rule off carries "# reason:". Allowed reasons: pure style, naming, formatting
+# or documentation; rules that contradict another rule we keep; rules that do not apply to SE plugins (for example APIs
+# that do not exist on .NET Framework 4.8, which every Legacy/Torch plugin must also compile for).
+# analyzers/RULESET.md is generated from this file (python deep_tools.py --ruleset).
+#
+# Every analyzer rule that is enabled by default becomes a warning. Useful rules that ship disabled by default are turned
+# on explicitly at the bottom (the bulk key only reaches rules enabled by default).
+# DeepScan reads this file itself (keys may contain spaces there); the csproj build passes it to the compiler, which
+# ignores the few keys it cannot parse.
+is_global = true
+global_level = 100
+
+dotnet_analyzer_diagnostic.severity = warning
+
+# ======================================================================== whole categories
+dotnet_analyzer_diagnostic.category-Style.severity = none # reason: style category: code shape only, never a defect
+dotnet_analyzer_diagnostic.category-Naming.severity = none # reason: naming category: names only, never a defect
+dotnet_analyzer_diagnostic.category-Documentation.severity = none # reason: documentation-comment rules: docs, not behaviour
+dotnet_analyzer_diagnostic.category-Formatting.severity = none # reason: formatting category: whitespace and layout only
+dotnet_analyzer_diagnostic.category-Readability.severity = none # reason: readability category: style only
+dotnet_analyzer_diagnostic.category-Layout.severity = none # reason: layout category: formatting only
+dotnet_analyzer_diagnostic.category-Ordering.severity = none # reason: member ordering: style only
+dotnet_analyzer_diagnostic.category-Spacing.severity = none # reason: spacing: formatting only
+dotnet_analyzer_diagnostic.category-Info Code Smell.severity = none # reason: Sonar informational smells: style (Sonar rules that find defects are turned on by id below)
+dotnet_analyzer_diagnostic.category-Minor Code Smell.severity = none # reason: Sonar minor smells: style and taste (defect-finding ones are turned on by id below)
+
+# ======================================================================== NetAnalyzers (CA)
+dotnet_diagnostic.CA1002.severity = none # reason: API design (List<T> in public API): plugins are not reusable libraries
+dotnet_diagnostic.CA1003.severity = none # reason: API design (EventHandler<T> signatures): game and Torch events use their own delegates
+dotnet_diagnostic.CA1005.severity = none # reason: API design (generic parameter count): taste
+dotnet_diagnostic.CA1008.severity = none # reason: API design (enum zero value): config enums map to fixed saved values
+dotnet_diagnostic.CA1010.severity = none # reason: API design (generic collection interfaces): taste
+dotnet_diagnostic.CA1012.severity = none # reason: API design (abstract constructors): style
+dotnet_diagnostic.CA1014.severity = none # reason: CLSCompliant attribute: not applicable to plugins
+dotnet_diagnostic.CA1016.severity = none # reason: assembly version attribute: covered by the release consistency check
+dotnet_diagnostic.CA1017.severity = none # reason: ComVisible attribute: not applicable to plugins
+dotnet_diagnostic.CA1018.severity = none # reason: AttributeUsage on custom attributes: style
+dotnet_diagnostic.CA1019.severity = none # reason: attribute argument accessors: style
+dotnet_diagnostic.CA1021.severity = none # reason: out parameters: style; game APIs use out parameters
+dotnet_diagnostic.CA1024.severity = none # reason: use properties where appropriate: style
+dotnet_diagnostic.CA1027.severity = none # reason: Flags attribute on enums: style
+dotnet_diagnostic.CA1028.severity = none # reason: enum storage type: saved config enums keep their type
+dotnet_diagnostic.CA1030.severity = none # reason: use events where appropriate: style
+dotnet_diagnostic.CA1031.severity = none # reason: contradicts DR015 (a catch-all is required at game entry points: Update, handlers, commands, so one exception does not stop the server); catches that hide errors are found by EPC12/ERP022/RCS1075
+dotnet_diagnostic.CA1032.severity = none # reason: standard exception constructors: style
+dotnet_diagnostic.CA1033.severity = none # reason: interface methods callable by child types: API design for libraries
+dotnet_diagnostic.CA1034.severity = none # reason: nested visible types: style
+dotnet_diagnostic.CA1036.severity = none # reason: comparison operators with IComparable: API design
+dotnet_diagnostic.CA1040.severity = none # reason: empty interfaces: style
+dotnet_diagnostic.CA1041.severity = none # reason: Obsolete message: documentation
+dotnet_diagnostic.CA1043.severity = none # reason: indexer argument types: API design
+dotnet_diagnostic.CA1044.severity = none # reason: write-only properties: API design
+dotnet_diagnostic.CA1045.severity = none # reason: ref parameters: style; game APIs use ref
+dotnet_diagnostic.CA1046.severity = none # reason: equality operator on reference types: API design
+dotnet_diagnostic.CA1050.severity = none # reason: types in namespaces: style
+dotnet_diagnostic.CA1051.severity = none # reason: visible instance fields: style; XML-serialised configs and game patterns use fields
+dotnet_diagnostic.CA1052.severity = none # reason: static holder types: style
+dotnet_diagnostic.CA1054.severity = none # reason: URI parameters as System.Uri: API design
+dotnet_diagnostic.CA1055.severity = none # reason: URI return values as System.Uri: API design
+dotnet_diagnostic.CA1056.severity = none # reason: URI properties as System.Uri: API design; XML configs store strings
+dotnet_diagnostic.CA1060.severity = none # reason: P/Invokes in a NativeMethods class: code organisation only
+dotnet_diagnostic.CA1062.severity = none # reason: public argument null checks: plugins are not libraries; nullable warnings cover this where enabled
+dotnet_diagnostic.CA1063.severity = none # reason: full Dispose(bool) pattern: style for sealed and finalizer-less types; real disposal bugs are found by CA2213/IDISP*
+dotnet_diagnostic.CA1064.severity = none # reason: public exceptions: API design
+dotnet_diagnostic.CA1066.severity = none # reason: IEquatable when overriding Equals: API design
+dotnet_diagnostic.CA1067.severity = none # reason: override Equals for IEquatable: API design
+dotnet_diagnostic.CA1068.severity = none # reason: CancellationToken last: API design
+dotnet_diagnostic.CA1303.severity = none # reason: localized strings: plugins log and reply in English
+dotnet_diagnostic.CA1501.severity = none # reason: inheritance depth: game and WPF types are deep by design
+dotnet_diagnostic.CA1502.severity = none # reason: cyclomatic complexity: metric, not a defect
+dotnet_diagnostic.CA1505.severity = none # reason: maintainability index: metric, not a defect
+dotnet_diagnostic.CA1506.severity = none # reason: class coupling: metric, not a defect
+dotnet_diagnostic.CA1507.severity = none # reason: nameof for parameter names: style
+dotnet_diagnostic.CA1510.severity = none # reason: ArgumentNullException.ThrowIfNull does not exist on net48
+dotnet_diagnostic.CA1511.severity = none # reason: ArgumentException.ThrowIfNullOrEmpty does not exist on net48
+dotnet_diagnostic.CA1512.severity = none # reason: ArgumentOutOfRangeException.ThrowIf* does not exist on net48
+dotnet_diagnostic.CA1513.severity = none # reason: ObjectDisposedException.ThrowIf does not exist on net48
+dotnet_diagnostic.CA1515.severity = none # reason: make public types internal: plugin types are public on purpose (the loaders find them by reflection)
+dotnet_diagnostic.CA1700.severity = none # reason: naming: enum value names
+dotnet_diagnostic.CA1707.severity = none # reason: naming: underscores (Harmony patch parameters such as __instance need them)
+dotnet_diagnostic.CA1708.severity = none # reason: naming: case-only differences
+dotnet_diagnostic.CA1710.severity = none # reason: naming: collection suffixes
+dotnet_diagnostic.CA1711.severity = none # reason: naming: reserved suffixes
+dotnet_diagnostic.CA1712.severity = none # reason: naming: enum value prefixes
+dotnet_diagnostic.CA1714.severity = none # reason: naming: flags enum plurals
+dotnet_diagnostic.CA1715.severity = none # reason: naming: interface and type parameter prefixes
+dotnet_diagnostic.CA1716.severity = none # reason: naming: reserved keywords
+dotnet_diagnostic.CA1717.severity = none # reason: naming: enum plurals
+dotnet_diagnostic.CA1720.severity = none # reason: naming: type names in identifiers
+dotnet_diagnostic.CA1721.severity = none # reason: naming: property vs method names
+dotnet_diagnostic.CA1724.severity = none # reason: naming: type names that match namespaces
+dotnet_diagnostic.CA1725.severity = none # reason: naming: parameter names in overrides
+dotnet_diagnostic.CA1727.severity = none # reason: naming: logging placeholders
+dotnet_diagnostic.CA1805.severity = none # reason: explicit default initialisation: style
+dotnet_diagnostic.CA1812.severity = none # reason: uninstantiated internal classes: the loaders and XML serialisers create them by reflection
+dotnet_diagnostic.CA1815.severity = none # reason: Equals on value types: API design
+dotnet_diagnostic.CA1819.severity = none # reason: array properties: XML-serialised configs use arrays
+dotnet_diagnostic.CA1822.severity = none # reason: mark members static: style
+dotnet_diagnostic.CA1848.severity = none # reason: LoggerMessage delegates: plugins log through NLog or the PluginSdk, not Microsoft.Extensions.Logging
+dotnet_diagnostic.CA1852.severity = none # reason: seal internal types: style-level micro-optimisation
+dotnet_diagnostic.CA2007.severity = none # reason: ConfigureAwait: plugin code has no UI SynchronizationContext to capture (the game thread queue is not one); deadlock risks are found by VSTHRD002/VSTHRD103
+dotnet_diagnostic.CA2211.severity = none # reason: non-constant static fields visible: plugin singletons (Instance) by design; races are found by S2696 and DeepRules
+dotnet_diagnostic.CA2217.severity = none # reason: Flags enum values: style
+dotnet_diagnostic.CA2225.severity = none # reason: operator alternates: API design
+dotnet_diagnostic.CA2227.severity = none # reason: settable collection properties: XML serialisation needs setters
+dotnet_diagnostic.CA2234.severity = none # reason: pass System.Uri instead of string: API design
+dotnet_diagnostic.CA2252.severity = none # reason: preview features: not used (LangVersion latest rule)
+dotnet_diagnostic.CA2263.severity = none # reason: generic Enum overloads do not exist on net48
+dotnet_diagnostic.CA5394.severity = none # reason: insecure randomness: game randomness is not security (crypto rules CA5350/CA5351 stay on)
+
+# ======================================================================== Meziantou (MA)
+dotnet_diagnostic.MA0003.severity = none # reason: named boolean arguments: style
+dotnet_diagnostic.MA0004.severity = none # reason: ConfigureAwait(false): same as CA2007, no UI context in plugin code
+dotnet_diagnostic.MA0006.severity = none # reason: string.Equals instead of ==: == on strings is ordinal already; culture issues are MA0001/CA1307/CA1309
+dotnet_diagnostic.MA0007.severity = none # reason: trailing commas: formatting
+dotnet_diagnostic.MA0015.severity = none # reason: parameter name in ArgumentException: message quality, not behaviour
+dotnet_diagnostic.MA0016.severity = none # reason: prefer collection abstractions: API design
+dotnet_diagnostic.MA0025.severity = none # reason: NotImplementedException: covered by the TODO check
+dotnet_diagnostic.MA0026.severity = none # reason: TODO comments: duplicate of the release check, which counts them
+dotnet_diagnostic.MA0036.severity = none # reason: make class static: style
+dotnet_diagnostic.MA0038.severity = none # reason: make method static: style
+dotnet_diagnostic.MA0041.severity = none # reason: make property static: style
+dotnet_diagnostic.MA0046.severity = none # reason: EventHandler delegate shape: API design
+dotnet_diagnostic.MA0047.severity = none # reason: types in namespaces: style
+dotnet_diagnostic.MA0048.severity = none # reason: file name matches type name: style
+dotnet_diagnostic.MA0051.severity = none # reason: method length: metric, not a defect
+dotnet_diagnostic.MA0053.severity = none # reason: seal classes: style
+dotnet_diagnostic.MA0069.severity = none # reason: non-constant static fields visible: same as CA2211
+dotnet_diagnostic.MA0071.severity = none # reason: avoid redundant else: style
+dotnet_diagnostic.MA0097.severity = none # reason: IComparable operators: API design
+dotnet_diagnostic.MA0127.severity = none # reason: string.Equals instead of 'is' pattern: style
+dotnet_diagnostic.MA0154.severity = none # reason: langword in XML comments: documentation
+dotnet_diagnostic.MA0158.severity = none # reason: System.Threading.Lock does not exist on net48
+dotnet_diagnostic.MA0184.severity = none # reason: interpolated string without parameters: style
+
+# ======================================================================== Roslynator (RCS): one category for all, so style rules by id
+dotnet_diagnostic.RCS1001.severity = none # reason: braces: formatting
+dotnet_diagnostic.RCS1003.severity = none # reason: braces on if-else: formatting
+dotnet_diagnostic.RCS1018.severity = none # reason: accessibility modifiers: style
+dotnet_diagnostic.RCS1021.severity = none # reason: lambda body shape: style
+dotnet_diagnostic.RCS1037.severity = none # reason: trailing whitespace: formatting
+dotnet_diagnostic.RCS1049.severity = none # reason: boolean comparison: style
+dotnet_diagnostic.RCS1061.severity = none # reason: merge nested if: style
+dotnet_diagnostic.RCS1073.severity = none # reason: if to return: style
+dotnet_diagnostic.RCS1085.severity = none # reason: auto-property: style
+dotnet_diagnostic.RCS1090.severity = none # reason: ConfigureAwait: same as CA2007
+dotnet_diagnostic.RCS1102.severity = none # reason: make class static: style
+dotnet_diagnostic.RCS1112.severity = none # reason: combine Where calls: style
+dotnet_diagnostic.RCS1123.severity = none # reason: parentheses for clarity: formatting
+dotnet_diagnostic.RCS1124.severity = none # reason: inline local: style
+dotnet_diagnostic.RCS1129.severity = none # reason: redundant field initialisation: style
+dotnet_diagnostic.RCS1136.severity = none # reason: merge switch sections: style
+dotnet_diagnostic.RCS1139.severity = none # reason: summary element: documentation
+dotnet_diagnostic.RCS1140.severity = none # reason: exception documentation: documentation
+dotnet_diagnostic.RCS1141.severity = none # reason: param documentation: documentation
+dotnet_diagnostic.RCS1142.severity = none # reason: typeparam documentation: documentation
+dotnet_diagnostic.RCS1146.severity = none # reason: conditional access: style
+dotnet_diagnostic.RCS1161.severity = none # reason: enum explicit values: style
+dotnet_diagnostic.RCS1163.severity = none # reason: unused parameter: event handlers and Harmony patches need fixed signatures (S1172 is off for the same reason)
+dotnet_diagnostic.RCS1169.severity = none # reason: make field read-only: style
+dotnet_diagnostic.RCS1170.severity = none # reason: read-only auto-property: style
+dotnet_diagnostic.RCS1181.severity = none # reason: comment placement: formatting
+dotnet_diagnostic.RCS1186.severity = none # reason: Regex instance vs static: style
+dotnet_diagnostic.RCS1189.severity = none # reason: region directives: formatting
+dotnet_diagnostic.RCS1194.severity = none # reason: exception constructors: style
+dotnet_diagnostic.RCS1197.severity = none # reason: StringBuilder call shape: style
+dotnet_diagnostic.RCS1201.severity = none # reason: method chaining: style
+dotnet_diagnostic.RCS1226.severity = none # reason: documentation paragraphs: documentation
+dotnet_diagnostic.RCS1231.severity = none # reason: ref read-only parameters: style
+dotnet_diagnostic.RCS1234.severity = none # reason: duplicate enum values: style (CA1069 stays on for real duplicates)
+dotnet_diagnostic.RCS1240.severity = none # reason: unnecessary operator: style
+dotnet_diagnostic.RCS1241.severity = none # reason: IComparable implementation: API design
+dotnet_diagnostic.RCS1246.severity = none # reason: element access instead of First(): style
+dotnet_diagnostic.RCS1251.severity = none # reason: braces on record declarations: formatting
+
+# ======================================================================== Sonar (S): taste rules outside the smell categories
+dotnet_diagnostic.S101.severity = none # reason: naming: type names
+dotnet_diagnostic.S107.severity = none # reason: parameter count: metric
+dotnet_diagnostic.S1066.severity = none # reason: merge nested if: style
+dotnet_diagnostic.S1104.severity = none # reason: public fields: XML-serialised configs use fields
+dotnet_diagnostic.S1118.severity = none # reason: utility class constructors: style
+dotnet_diagnostic.S1135.severity = none # reason: TODO comments: duplicate of the release check, which counts them
+dotnet_diagnostic.S1172.severity = none # reason: unused parameter: event handlers and Harmony patches need fixed signatures
+dotnet_diagnostic.S1192.severity = none # reason: duplicated string literals: style
+dotnet_diagnostic.S125.severity = none # reason: commented-out code: style
+dotnet_diagnostic.S138.severity = none # reason: method length: metric
+dotnet_diagnostic.S1450.severity = none # reason: field could be local: style
+dotnet_diagnostic.S1541.severity = none # reason: complexity: metric
+dotnet_diagnostic.S2245.severity = none # reason: weak random: game randomness is not security (same as CA5394)
+dotnet_diagnostic.S2325.severity = none # reason: make member static: style
+dotnet_diagnostic.S3011.severity = none # reason: reflection past private does not apply to SE plugins as a defect: they must reach game internals with no public API (the user, 2026-11-17: exempt for all tests); reflection targets are checked against the decompiled game instead
+dotnet_diagnostic.S3242.severity = none # reason: parameter type could be more general: API design
+dotnet_diagnostic.S3267.severity = none # reason: loops to LINQ: style (LINQ allocates on hot paths)
+dotnet_diagnostic.S3358.severity = none # reason: nested ternaries: style
+dotnet_diagnostic.S3776.severity = none # reason: cognitive complexity: metric
+dotnet_diagnostic.S4136.severity = none # reason: overload ordering: style
+dotnet_diagnostic.S4144.severity = none # reason: identical method bodies: style
+dotnet_diagnostic.S9422.severity = none # reason: System.Threading.Lock does not exist on net48
+
+# ======================================================================== SecurityCodeScan
+dotnet_diagnostic.SCS0005.severity = none # reason: weak random: game randomness is not security (same as CA5394)
+
+# ======================================================================== IDisposableAnalyzers
+dotnet_diagnostic.IDISP017.severity = none # reason: prefer using over Dispose(): disposal style only
+dotnet_diagnostic.IDISP020.severity = none # reason: SuppressFinalize(this) shape: style
+dotnet_diagnostic.IDISP021.severity = none # reason: Dispose(true) shape: style
+dotnet_diagnostic.IDISP022.severity = none # reason: Dispose(false) shape: style
+dotnet_diagnostic.IDISP023.severity = none # reason: finalizer member access shape: style
+dotnet_diagnostic.IDISP025.severity = none # reason: sealed class disposal shape: style
+
+# ======================================================================== VS threading: rules about Visual Studio's main thread
+dotnet_diagnostic.VSTHRD001.severity = none # reason: JoinableTaskFactory.SwitchToMainThreadAsync: Visual Studio only; the game thread queue is checked by DeepRules
+dotnet_diagnostic.VSTHRD004.severity = none # reason: await SwitchToMainThreadAsync: Visual Studio only
+dotnet_diagnostic.VSTHRD010.severity = none # reason: VS main-thread affinity: Visual Studio only
+dotnet_diagnostic.VSTHRD012.severity = none # reason: JoinableTaskFactory overloads: Visual Studio only
+dotnet_diagnostic.VSTHRD108.severity = none # reason: thread affinity assertions: Visual Studio only
+dotnet_diagnostic.VSTHRD111.severity = none # reason: ConfigureAwait(bool): same as CA2007
+dotnet_diagnostic.VSTHRD200.severity = none # reason: Async suffix: naming
+
+# ======================================================================== turned on although disabled by default (they find defects)
+# NetAnalyzers: reliability, disposal, globalization, security, performance
+dotnet_diagnostic.CA1001.severity = warning
+dotnet_diagnostic.CA1065.severity = warning
+dotnet_diagnostic.CA1069.severity = warning
+dotnet_diagnostic.CA1304.severity = warning
+dotnet_diagnostic.CA1305.severity = warning
+dotnet_diagnostic.CA1307.severity = warning
+dotnet_diagnostic.CA1309.severity = warning
+dotnet_diagnostic.CA1310.severity = warning
+dotnet_diagnostic.CA1311.severity = warning
+dotnet_diagnostic.CA1508.severity = warning
+dotnet_diagnostic.CA1806.severity = warning
+dotnet_diagnostic.CA1816.severity = warning
+dotnet_diagnostic.CA1821.severity = warning
+dotnet_diagnostic.CA1823.severity = warning
+dotnet_diagnostic.CA1826.severity = warning
+dotnet_diagnostic.CA1827.severity = warning
+dotnet_diagnostic.CA1828.severity = warning
+dotnet_diagnostic.CA1829.severity = warning
+dotnet_diagnostic.CA1836.severity = warning
+dotnet_diagnostic.CA1841.severity = warning
+dotnet_diagnostic.CA1849.severity = warning
+dotnet_diagnostic.CA1851.severity = warning
+dotnet_diagnostic.CA1854.severity = warning
+dotnet_diagnostic.CA2000.severity = warning
+dotnet_diagnostic.CA2002.severity = warning
+dotnet_diagnostic.CA2008.severity = warning
+dotnet_diagnostic.CA2009.severity = warning
+dotnet_diagnostic.CA2011.severity = warning
+dotnet_diagnostic.CA2012.severity = warning
+dotnet_diagnostic.CA2016.severity = warning
+dotnet_diagnostic.CA2100.severity = warning
+dotnet_diagnostic.CA2101.severity = warning
+dotnet_diagnostic.CA2201.severity = warning
+dotnet_diagnostic.CA2213.severity = warning
+dotnet_diagnostic.CA2214.severity = warning
+dotnet_diagnostic.CA2215.severity = warning
+dotnet_diagnostic.CA2216.severity = warning
+dotnet_diagnostic.CA2218.severity = warning
+dotnet_diagnostic.CA2219.severity = warning
+dotnet_diagnostic.CA2224.severity = warning
+dotnet_diagnostic.CA2229.severity = warning
+dotnet_diagnostic.CA2231.severity = warning
+dotnet_diagnostic.CA2235.severity = warning
+dotnet_diagnostic.CA2237.severity = warning
+dotnet_diagnostic.CA2241.severity = warning
+dotnet_diagnostic.CA2242.severity = warning
+dotnet_diagnostic.CA2249.severity = none # reason: Contains instead of IndexOf: readability only, same cost; off by default (the user, 2026-11-21)
+dotnet_diagnostic.CA2250.severity = warning
+dotnet_diagnostic.CA2251.severity = warning
+dotnet_diagnostic.CA2300.severity = warning
+dotnet_diagnostic.CA2301.severity = warning
+dotnet_diagnostic.CA2302.severity = warning
+dotnet_diagnostic.CA2305.severity = warning
+dotnet_diagnostic.CA2310.severity = warning
+dotnet_diagnostic.CA2311.severity = warning
+dotnet_diagnostic.CA2312.severity = warning
+dotnet_diagnostic.CA2315.severity = warning
+dotnet_diagnostic.CA2321.severity = warning
+dotnet_diagnostic.CA2322.severity = warning
+dotnet_diagnostic.CA2326.severity = warning
+dotnet_diagnostic.CA2327.severity = warning
+dotnet_diagnostic.CA2328.severity = warning
+dotnet_diagnostic.CA2329.severity = warning
+dotnet_diagnostic.CA2330.severity = warning
+dotnet_diagnostic.CA2350.severity = warning
+dotnet_diagnostic.CA2351.severity = warning
+dotnet_diagnostic.CA2352.severity = warning
+dotnet_diagnostic.CA2353.severity = warning
+dotnet_diagnostic.CA2354.severity = warning
+dotnet_diagnostic.CA2355.severity = warning
+dotnet_diagnostic.CA2356.severity = warning
+dotnet_diagnostic.CA2361.severity = warning
+dotnet_diagnostic.CA2362.severity = warning
+dotnet_diagnostic.CA3001.severity = warning
+dotnet_diagnostic.CA3003.severity = warning
+dotnet_diagnostic.CA3006.severity = warning
+dotnet_diagnostic.CA3007.severity = warning
+dotnet_diagnostic.CA3011.severity = warning
+dotnet_diagnostic.CA3012.severity = warning
+dotnet_diagnostic.CA3061.severity = warning
+dotnet_diagnostic.CA3075.severity = warning
+dotnet_diagnostic.CA3076.severity = warning
+dotnet_diagnostic.CA3077.severity = warning
+dotnet_diagnostic.CA3147.severity = warning
+dotnet_diagnostic.CA5350.severity = warning
+dotnet_diagnostic.CA5351.severity = warning
+dotnet_diagnostic.CA5359.severity = warning
+dotnet_diagnostic.CA5360.severity = warning
+dotnet_diagnostic.CA5363.severity = warning
+dotnet_diagnostic.CA5364.severity = warning
+dotnet_diagnostic.CA5365.severity = warning
+dotnet_diagnostic.CA5369.severity = warning
+dotnet_diagnostic.CA5370.severity = warning
+dotnet_diagnostic.CA5371.severity = warning
+dotnet_diagnostic.CA5372.severity = warning
+dotnet_diagnostic.CA5373.severity = warning
+dotnet_diagnostic.CA5374.severity = warning
+dotnet_diagnostic.CA5379.severity = warning
+dotnet_diagnostic.CA5384.severity = warning
+dotnet_diagnostic.CA5385.severity = warning
+dotnet_diagnostic.CA5386.severity = warning
+dotnet_diagnostic.CA5397.severity = warning
+dotnet_diagnostic.CA5398.severity = warning
+# Meziantou
+dotnet_diagnostic.MA0011.severity = warning
+dotnet_diagnostic.MA0042.severity = warning
+dotnet_diagnostic.MA0045.severity = warning
+dotnet_diagnostic.MA0076.severity = warning
+dotnet_diagnostic.MA0134.severity = warning
+dotnet_diagnostic.MA0147.severity = warning
+dotnet_diagnostic.MA0155.severity = warning
+# Roslynator
+dotnet_diagnostic.RCS1210.severity = warning
+dotnet_diagnostic.RCS1213.severity = warning
+dotnet_diagnostic.RCS1229.severity = warning
+# Sonar rules that find defects, whatever their category
+dotnet_diagnostic.S108.severity = warning
+dotnet_diagnostic.S1144.severity = warning
+dotnet_diagnostic.S1854.severity = warning
+dotnet_diagnostic.S2223.severity = warning
+dotnet_diagnostic.S2551.severity = warning
+dotnet_diagnostic.S2696.severity = warning
+dotnet_diagnostic.S2930.severity = warning
+dotnet_diagnostic.S2931.severity = warning
+dotnet_diagnostic.S2952.severity = warning
+dotnet_diagnostic.S2953.severity = warning
+dotnet_diagnostic.S3168.severity = warning
+dotnet_diagnostic.S3881.severity = warning
+dotnet_diagnostic.S3966.severity = warning
+dotnet_diagnostic.S4462.severity = warning
+dotnet_diagnostic.S4487.severity = warning
+dotnet_diagnostic.S6562.severity = warning
+dotnet_diagnostic.S6580.severity = warning
+# VS threading rules that apply to any async code
+dotnet_diagnostic.VSTHRD002.severity = warning
+dotnet_diagnostic.VSTHRD100.severity = warning
+dotnet_diagnostic.VSTHRD101.severity = warning
+dotnet_diagnostic.VSTHRD103.severity = warning
+dotnet_diagnostic.VSTHRD110.severity = warning
+# BannedApiAnalyzers: a lead with its reason, never an error
+dotnet_diagnostic.RS0030.severity = warning
+dotnet_diagnostic.RS0031.severity = warning
+dotnet_diagnostic.RS0035.severity = warning
+
+# ======================================================================== analyzer options
+dotnet_code_quality.api_surface = all
+# The NetAnalyzers data-flow rules (CA1508, CA2000, the taint rules ...) analyse callees up to 3 calls deep by default; on
+# large methods that runs for over 20 minutes (PluginCheck stages/commandcheck/Program.cs, 2026-11-15). One level keeps
+# every rule on and finishes in seconds.
+dotnet_code_quality.max_interprocedural_method_call_chain = 1
+dotnet_code_quality.max_interprocedural_lambda_or_local_function_call_chain = 1
+# CA2000 and IDISP003 contradict each other on handing a part to its owner (form.Add, request.Content): CA2000 wants the
+# local cleared to null, IDISP003 flags that as re-assigning a disposable (the user, 2026-11-17: "i like it"). HttpContent
+# always belongs to the form or request it is handed to, so CA2000 skips HttpContent and its subclasses; IDISP still checks.
+dotnet_code_quality.CA2000.excluded_type_names_with_derived_types = T:System.Net.Http.HttpContent
+# DR037: the only hosts plugins may send HTTP requests to (the user, 2026-11-17: "starting with discord").
+# space-engineers.com is the server-list API the Rewards vote poller must read and claim against; adding it
+# here is the rule's own mechanism, agreed by the owner on 2026-11-19 ("resolve all errors"), and disclosed
+# in the plugin's README ("Network endpoints").
+deep_review.http_allowed_hosts = discord.com, ptb.discord.com, canary.discord.com, discordapp.com, ptb.discordapp.com, canary.discordapp.com, space-engineers.com

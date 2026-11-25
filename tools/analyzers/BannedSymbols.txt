@@ -1,0 +1,98 @@
+// Banned APIs for Space Engineers plugin reviews (Microsoft.CodeAnalysis.BannedApiAnalyzers, RS0030).
+// Format: <documentation comment id>;<reason shown in the RS0030 message>.
+// This is a review tool run on a copy of the plugin, never the plugin's repo. Every hit is a warning-level lead:
+// the reviewer gives the verdict (secure settings present, called off the game thread, value None, and so on).
+// Dual net48/net10 code: entries cover both runtimes; overloads that exist only on net10 are listed too and are
+// simply not found on net48.
+
+// ---- Deserialization that runs code (RCE) ----
+T:System.Runtime.Serialization.Formatters.Binary.BinaryFormatter;RCE: BinaryFormatter deserialization runs attacker-chosen types; obsolete and disabled on net10. Use JSON or XML with known types.
+T:System.Runtime.Serialization.Formatters.Soap.SoapFormatter;RCE: SoapFormatter deserialization runs attacker-chosen types.
+T:System.Runtime.Serialization.NetDataContractSerializer;RCE: NetDataContractSerializer embeds and trusts type names.
+T:System.Web.UI.LosFormatter;RCE: LosFormatter wraps ObjectStateFormatter/BinaryFormatter.
+T:System.Web.UI.ObjectStateFormatter;RCE: ObjectStateFormatter falls back to BinaryFormatter.
+T:System.Web.Script.Serialization.JavaScriptSerializer;JavaScriptSerializer with a type resolver deserializes arbitrary types; net48 only. Use System.Text.Json or Newtonsoft without TypeNameHandling.
+F:Newtonsoft.Json.TypeNameHandling.Objects;Newtonsoft TypeNameHandling other than None trusts $type from the data (RCE on untrusted input). Only None is safe.
+F:Newtonsoft.Json.TypeNameHandling.Arrays;Newtonsoft TypeNameHandling other than None trusts $type from the data (RCE on untrusted input). Only None is safe.
+F:Newtonsoft.Json.TypeNameHandling.All;Newtonsoft TypeNameHandling other than None trusts $type from the data (RCE on untrusted input). Only None is safe.
+F:Newtonsoft.Json.TypeNameHandling.Auto;Newtonsoft TypeNameHandling other than None trusts $type from the data (RCE on untrusted input). Only None is safe.
+
+// ---- XML parsing (XXE) ----
+T:System.Xml.XmlDocument;XXE risk on net48 unless XmlResolver is null; use XmlReader with secure settings (DtdProcessing.Prohibit, XmlResolver = null) or XDocument. Own config files are usually fine: check the settings.
+T:System.Xml.XmlTextReader;XmlTextReader resolves external entities by default on net48; use XmlReader.Create with secure XmlReaderSettings.
+
+// ---- Weak crypto and randomness ----
+T:System.Security.Cryptography.MD5;Weak hash (MD5): fine only for non-security checksums; use SHA256 for anything security related.
+// System.Security.Cryptography.SHA1 (and every type derived from it) is checked by DeepRules DR039 instead (the user, 2026-11-21:
+// "SHA handshakes are an exception"): the WebSocket handshake answer Base64(SHA1(Sec-WebSocket-Key + the RFC 6455 GUID)) is fixed by
+// RFC 6455 section 4.2.2 and browsers reject any other hash; DR039 flags every other SHA1 use with this ban's old reason (a weak hash,
+// fine only for non-security checksums, use SHA256 for anything security related), and drops CA5350, S4790 and SCS0006 only on that one call.
+T:System.Security.Cryptography.DES;Broken cipher (DES); use Aes.
+T:System.Security.Cryptography.TripleDES;Weak cipher (TripleDES); use Aes.
+T:System.Security.Cryptography.RC2;Broken cipher (RC2); use Aes.
+T:System.Security.Cryptography.MD5CryptoServiceProvider;Weak hash (MD5); use SHA256.
+T:System.Security.Cryptography.SHA1Managed;Weak hash (SHA1); use SHA256.
+T:System.Security.Cryptography.SHA1CryptoServiceProvider;Weak hash (SHA1); use SHA256.
+T:System.Security.Cryptography.DESCryptoServiceProvider;Broken cipher (DES); use Aes.
+T:System.Security.Cryptography.TripleDESCryptoServiceProvider;Weak cipher (TripleDES); use Aes.
+T:System.Security.Cryptography.RC2CryptoServiceProvider;Broken cipher (RC2); use Aes.
+T:System.Security.Cryptography.RNGCryptoServiceProvider;Obsolete on net10 (SYSLIB0023); use RandomNumberGenerator.Create() / RandomNumberGenerator.Fill, which exist on both runtimes.
+
+// ---- TLS ----
+P:System.Net.ServicePointManager.ServerCertificateValidationCallback;Process-wide certificate validation override: affects the game and every plugin; never return true unconditionally.
+P:System.Net.Http.HttpClientHandler.ServerCertificateCustomValidationCallback;Certificate validation override: check it does not accept every certificate.
+
+// ---- HTTP ----
+T:System.Net.WebClient;Obsolete (SYSLIB0014 on net10), synchronous calls block the calling thread (the game thread when called from Update or a handler); use one shared HttpClient.
+T:System.Net.HttpWebRequest;Obsolete (SYSLIB0014 on net10); synchronous GetResponse blocks the game thread; use one shared HttpClient.
+T:System.Net.HttpWebResponse;Comes with HttpWebRequest (obsolete on net10); use HttpClient.
+
+// ---- Hidden code and processes ----
+M:System.Reflection.Assembly.Load(System.Byte[]);Loads code from bytes: hidden code the hub cannot review. Blocker unless fully explained.
+M:System.Reflection.Assembly.Load(System.Byte[],System.Byte[]);Loads code from bytes: hidden code the hub cannot review. Blocker unless fully explained.
+M:System.Reflection.Assembly.LoadFrom(System.String);Loads a DLL from disk at run time: hidden code, and binding differs between net48 (load contexts) and net10.
+M:System.Reflection.Assembly.LoadFile(System.String);Loads a DLL from disk at run time: hidden code, and duplicate-identity loads differ between net48 and net10.
+M:System.AppDomain.CreateDomain(System.String);AppDomains are net48 only (PlatformNotSupportedException on net10) and a way to run hidden code.
+M:System.AppDomain.CreateDomain(System.String,System.Security.Policy.Evidence);AppDomains are net48 only and a way to run hidden code.
+M:System.AppDomain.CreateDomain(System.String,System.Security.Policy.Evidence,System.AppDomainSetup);AppDomains are net48 only and a way to run hidden code.
+E:System.AppDomain.AssemblyResolve;Adding an AssemblyResolve handler changes resolution for the game and every plugin; check it only answers for its own assemblies and returns null otherwise.
+// Process.Start(string) and Process.Start(ProcessStartInfo) are checked by DeepRules DR038 instead (the user, 2026-11-17:
+// "add an exception to the banned list. if the address opened only shows local pages"): opening a fixed local page is
+// safe, as this ban's old text already said for fixed links; DR038 flags every other target, Arguments and verbs.
+M:System.Diagnostics.Process.Start(System.String,System.String);Process execution: trace the command and argument sources.
+M:System.Diagnostics.Process.Start(System.String,System.Collections.Generic.IEnumerable{System.String});Process execution (net10): trace the command and argument sources.
+M:System.Diagnostics.Process.Start;Process execution: trace the command and argument sources.
+
+// ---- Threads and the game thread ----
+M:System.Threading.Thread.Abort;Throws PlatformNotSupportedException on net10; on net48 it can corrupt state mid-lock. Use cooperative cancellation.
+M:System.Threading.Thread.Abort(System.Object);Throws PlatformNotSupportedException on net10; use cooperative cancellation.
+M:System.Threading.Thread.Sleep(System.Int32);Blocks the game thread when called from Update/handlers; use a timer, a tick counter or await Task.Delay off the game thread.
+M:System.Threading.Thread.Sleep(System.TimeSpan);Blocks the game thread when called from Update/handlers; use a timer, a tick counter or await Task.Delay off the game thread.
+M:System.GC.Collect;Forced collections stall the whole server (all threads) for every player.
+M:System.GC.Collect(System.Int32);Forced collections stall the whole server for every player.
+M:System.GC.Collect(System.Int32,System.GCCollectionMode);Forced collections stall the whole server for every player.
+M:System.GC.Collect(System.Int32,System.GCCollectionMode,System.Boolean);Forced collections stall the whole server for every player.
+M:System.GC.Collect(System.Int32,System.GCCollectionMode,System.Boolean,System.Boolean);Forced collections stall the whole server for every player.
+M:HarmonyLib.Harmony.UnpatchAll(System.String);With no id (or another plugin's id) it removes every plugin's patches; pass this plugin's own Harmony id or use UnpatchSelf.
+M:System.Console.ReadLine;Blocks forever on a dedicated server (no console input under Magnetar/Torch services).
+M:System.Console.ReadKey;Blocks forever or throws without a console.
+M:System.Console.ReadKey(System.Boolean);Blocks forever or throws without a console.
+
+// ---- Files and paths ----
+M:System.Environment.GetFolderPath(System.Environment.SpecialFolder);The game supports -appdata: plugin data belongs under MyFileSystem.UserDataPath in a plugin-owned folder.
+M:System.Environment.GetFolderPath(System.Environment.SpecialFolder,System.Environment.SpecialFolderOption);The game supports -appdata: plugin data belongs under MyFileSystem.UserDataPath in a plugin-owned folder.
+M:System.IO.File.WriteAllText(System.String,System.String);Not atomic: a crash or full disk mid-write leaves a truncated file (config loss). Reviewer decides: write to a temp file then File.Replace/Move.
+M:System.IO.File.WriteAllText(System.String,System.String,System.Text.Encoding);Not atomic: a crash mid-write leaves a truncated file. Reviewer decides: temp file then File.Replace/Move.
+M:System.IO.File.WriteAllText(System.String,System.ReadOnlySpan{System.Char});Not atomic (net10 overload): temp file then File.Replace/Move.
+M:System.IO.File.WriteAllText(System.String,System.ReadOnlySpan{System.Char},System.Text.Encoding);Not atomic (net10 overload): temp file then File.Replace/Move.
+M:System.IO.File.WriteAllBytes(System.String,System.Byte[]);Not atomic: a crash mid-write leaves a truncated file. Reviewer decides: temp file then File.Replace/Move.
+M:System.IO.File.WriteAllBytes(System.String,System.ReadOnlySpan{System.Byte});Not atomic (net10 overload): temp file then File.Replace/Move.
+
+// ---- Time ----
+P:System.DateTime.Now;Local time: jumps at DST changes and differs per host; use DateTime.UtcNow for intervals and storage (Stopwatch for durations), local time only for display or a configured time of day.
+P:System.DateTime.Today;Local date: changes with DST/time zone; use UtcNow, or make the local time-of-day intent explicit.
+P:System.Environment.TickCount;Wraps every 24.9 days (negative after 24.9 days of uptime); use Stopwatch. TickCount64 is net10-only.
+
+// ---- Culture ----
+M:System.String.ToLower;Culture-sensitive (Turkish I): use ToLowerInvariant for identifiers and comparisons, or pass a CultureInfo.
+M:System.String.ToUpper;Culture-sensitive (Turkish I): use ToUpperInvariant for identifiers and comparisons, or pass a CultureInfo.

@@ -1,0 +1,34 @@
+# Generated build inputs and caches
+tools/cache/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# .NET build output
+**/bin/
+**/obj/
+
+# Node dependencies
+**/node_modules/
+
+# Review and gate output
+out/
+**/tools-report.json
+**/tools-report.md
+**/tools-report.sarif
+**/gate.json
+**/gate.txt
+
+# Local configuration and secrets
+.env
+.env.*
+*.local
+
+# IDE and OS
+.vs/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

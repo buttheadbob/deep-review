@@ -1,0 +1,14 @@
+{
+  "schema": "plugincheck-approved-tools/1",
+  "about": "test fixture: one approved version of Flow's C# gate port",
+  "approved": [
+    {
+      "toolsVersion": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "producer": "flow-native-gate",
+      "approvedUtc": "2026-11-15T21:00:00Z",
+      "approvedBy": "test",
+      "parity": "test fixture",
+      "note": "fixture"
+    }
+  ]
+}

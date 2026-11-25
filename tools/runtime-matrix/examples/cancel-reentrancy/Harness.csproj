@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Runtime matrix harness: the same code built for .NET Framework 4.8 (MagnetarLegacy, Torch) and .NET 10
+       (MagnetarInterim, Quasar). run_matrix.py builds both and runs each, then compares exit code, output and exceptions.
+       Only code written for the harness runs here: plugin code is pasted in with every game type stubbed. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net48;net10.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>Harness</AssemblyName>
+    <RootNamespace>Harness</RootNamespace>
+    <Optimize>true</Optimize>
+    <!-- No app.config binding redirects and no apphost dependencies beyond the framework. -->
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <!-- net48 has no System.Threading.Lock etc.: keep the code in the common subset, as plugins must. -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

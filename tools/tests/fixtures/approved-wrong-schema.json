@@ -1,0 +1,6 @@
+{
+  "schema": "plugincheck-approved-tools/2",
+  "approved": [
+    { "toolsVersion": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" }
+  ]
+}

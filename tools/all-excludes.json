@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "about": "Projects that deep_tools.py --all leaves out by default, from any project list. Each entry needs a reason. --exclude adds more for one run. 'exempt' lists projects the user exempted from the gate (MasterRules 29a); --all skips them and says so.",
+  "exclude": [
+    {
+      "name": "WeaponCore",
+      "reason": "The user dropped all WeaponCore testing permanently (2026-11-13: no WeaponCore fix work, tests or PRs)."
+    }
+  ],
+  "exempt": [
+    {
+      "name": "Flow",
+      "reason": "exempt from the gate under MasterRules 29a (the user's permanent exception for the Flow rework, 2026-11-15)."
+    },
+    {
+      "name": "GridGenerator",
+      "reason": "exempt from the gate under MasterRules 29a (the user's exception, 2026-11-15: GridGenerator is not part of the review system)."
+    }
+  ]
+}

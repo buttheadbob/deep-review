@@ -1,0 +1,16 @@
+# Deep review ruff configuration. Passed with --config, so the repository's own ruff/pyproject settings are ignored.
+# Every rule runs (ALL). The only way to turn one off is an entry below with a "# reason:". Inline "# noqa" is ignored
+# (--ignore-noqa) and every "# noqa" is counted as a suppression issue.
+# Listed in analyzers/RULESET.md (python deep_tools.py --ruleset).
+
+target-version = "py311"
+respect-gitignore = true
+
+[lint]
+select = ["ALL"]
+ignore = [
+    "D203",    # reason: conflicts with D211 (no blank line before a class docstring); D211 is kept
+    "D213",    # reason: conflicts with D212 (multi-line summary on the first line); D212 is kept
+    "COM812",  # reason: conflicts with the ruff formatter (trailing commas); ruff itself warns when both are on
+    "ISC001",  # reason: conflicts with the ruff formatter (implicit string concatenation on one line)
+]

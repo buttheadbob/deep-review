@@ -1,0 +1,7 @@
+# Deep review gitleaks configuration: the built-in rule set, unchanged. Passed with --config, so a repository's own
+# .gitleaks.toml is ignored; deep_tools.py also points --gitleaks-ignore-path at an empty file, so a repository's
+# .gitleaksignore cannot hide a finding. Inline "gitleaks:allow" comments are counted as suppression issues.
+title = "deep review"
+
+[extend]
+useDefault = true

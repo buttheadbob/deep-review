@@ -1,0 +1,6 @@
+{
+  "schema": "plugincheck-approved-tools/1",
+  "approved": [
+    { "producer": "flow-native-gate", "approvedUtc": "2026-11-15T21:00:00Z" }
+  ]
+}

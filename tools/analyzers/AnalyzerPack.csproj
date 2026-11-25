@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Restore-only: deep_tools.py runs `dotnet restore` on this file with the packages folder tools/cache/nuget/packages,
+       then copies each package's analyzers/dotnet/cs/*.dll (or analyzers/dotnet/*.dll) into tools/cache/analyzers/<package>/.
+       Nothing is built from it. Versions are the latest stable on nuget.org as of 2026-11-15. -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <NoWarn>$(NoWarn);NU1701;NU1608</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Core set named by the user -->
+    <PackageDownload Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="[11.0.100]" />
+    <PackageDownload Include="SonarAnalyzer.CSharp" Version="[10.36.0.15337]" />
+    <PackageDownload Include="Meziantou.Analyzer" Version="[3.0.341]" />
+    <PackageDownload Include="Roslynator.Analyzers" Version="[5.0.1]" />
+    <PackageDownload Include="IDisposableAnalyzers" Version="[4.0.8]" />
+    <!-- 0.1.2 is the newest stable release; 0.9.0 is still a beta -->
+    <PackageDownload Include="ErrorProne.NET.CoreAnalyzers" Version="[0.1.2]" />
+    <!-- Threading, async and the rest of the task list -->
+    <PackageDownload Include="Microsoft.VisualStudio.Threading.Analyzers" Version="[18.12.1]" />
+    <PackageDownload Include="AsyncFixer" Version="[2.1.0]" />
+    <PackageDownload Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="[5.6.0]" />
+    <!-- Taint analysis, LGPL-3.0. Kept only while it loads in the current Roslyn without errors (deep_tools.py checks). -->
+    <PackageDownload Include="SecurityCodeScan.VS2019" Version="[5.6.7]" />
+    <!-- Hidden allocations (MIT). Noisy: deep_tools.py keeps its results only in per-tick members and their callees. -->
+    <PackageDownload Include="ClrHeapAllocationAnalyzer" Version="[3.0.0]" />
+    <!-- Not analyzers: the net48 reference assemblies DeepScan compiles Legacy and Torch code against -->
+    <PackageDownload Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="[1.0.3]" />
+  </ItemGroup>
+</Project>
